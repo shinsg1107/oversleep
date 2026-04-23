@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Category, Material, Product } from "@/types/database";
 import { ProductForm } from "../product-form";
 import { updateProduct } from "../actions";
+import { VariantsSection } from "./variants-section";
 
 async function getData(id: number) {
   const supabase = await createClient();
@@ -42,6 +43,8 @@ export default async function EditProductPage({
         materials={materials}
         submitLabel="저장"
       />
+
+      <VariantsSection productId={product.id} />
     </main>
   );
 }
