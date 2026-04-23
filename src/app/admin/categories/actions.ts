@@ -1,0 +1,30 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
+
+export async function createCategory(formData: FormData) {
+  await requireAdmin();
+  const name = String(formData.get("name") ?? "").trim();
+  if (!name) throw new Error("이름은 필수입니다.");
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("categories").insert({ name });
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/products");
+}
+
+export async function deleteCategory(formData: FormData) {
+  await requireAdmin();
+  const id = Number(formData.get("id"));
+  if (!Number.isFinite(id)) throw new Error("id 누락");
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("categories").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/categories");
+}

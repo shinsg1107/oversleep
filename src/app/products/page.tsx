@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import type { Category, Material, Product } from "@/types/database";
 
 type ProductWithRefs = Product & {
@@ -10,6 +10,7 @@ type ProductWithRefs = Product & {
 const priceFormatter = new Intl.NumberFormat("ko-KR");
 
 async function getProducts() {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
     .select("*, categories(name), materials(name)")
